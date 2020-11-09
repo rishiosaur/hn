@@ -1,7 +1,5 @@
 import { Resolver, Query, Field, InputType, Mutation, Arg } from 'type-graphql'
 import { User } from '../models/User'
-import { Transaction } from '../models/Transaction'
-import { getRepository } from 'typeorm'
 
 @InputType()
 export class CreateUserInput {

@@ -11,7 +11,7 @@ export class CreateTransaction {
 	to: string
 
 	@Field()
-	amount = 0
+	balance: number
 }
 
 @Resolver()
@@ -34,7 +34,7 @@ export class TransactionResolver {
 	async transact(@Arg('data') data: CreateTransaction) {
 		const transaction = new Transaction()
 
-		transaction.balance = data.amount
+		transaction.balance = data.balance
 		transaction.validated = false
 
 		const fromUser = await User.findOneOrFail(data.from, {
