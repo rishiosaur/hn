@@ -1,34 +1,43 @@
-import { User } from './User'
+import User from './User'
 import {
 	Entity,
 	BaseEntity,
 	PrimaryGeneratedColumn,
 	Column,
 	ManyToOne,
-	JoinColumn,
 } from 'typeorm'
 import { ObjectType, Field, ID } from 'type-graphql'
 
 @Entity()
 @ObjectType()
-export class Transaction extends BaseEntity {
+export default class Transaction extends BaseEntity {
 	@PrimaryGeneratedColumn()
-	@Field(() => ID)
+	@Field(() => ID, {
+		description: 'An autoincrementing identifier for a transaction.',
+	})
 	id: string
 
 	@Column()
-	@Field(() => Number)
+	@Field(() => Number, {
+		description: 'An autoincrementing identifier for a transaction.',
+	})
 	balance: number
 
 	@ManyToOne(() => User, (user) => user.outgoingTransactions)
-	@Field(() => User)
+	@Field(() => User, {
+		description: 'Relationship to a user that is sending currency.',
+	})
 	from: User
 
 	@ManyToOne(() => User, (user) => user.incomingTransactions)
-	@Field(() => User)
+	@Field(() => User, {
+		description: 'Relationship to a user that is receiving currency.',
+	})
 	to: User
 
-	@Field(() => Boolean)
+	@Field(() => Boolean, {
+		description: 'Whether or not the transaction has gone through.',
+	})
 	@Column({ default: false })
 	validated: boolean
 }
