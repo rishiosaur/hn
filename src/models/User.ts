@@ -1,11 +1,4 @@
-import {
-	Entity,
-	BaseEntity,
-	PrimaryGeneratedColumn,
-	Column,
-	OneToMany,
-	PrimaryColumn,
-} from 'typeorm'
+import { Entity, BaseEntity, Column, OneToMany, PrimaryColumn } from 'typeorm'
 import { ObjectType, Field, ID } from 'type-graphql'
 import Transaction from './Transaction'
 
