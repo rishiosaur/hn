@@ -12,7 +12,7 @@ import { ObjectType, Field, ID } from 'type-graphql'
 @Entity()
 @ObjectType()
 export class Transaction extends BaseEntity {
-	@PrimaryGeneratedColumn('uuid')
+	@PrimaryGeneratedColumn()
 	@Field(() => ID)
 	id: string
 
