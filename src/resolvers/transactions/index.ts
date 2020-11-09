@@ -1,4 +1,12 @@
-import { Resolver, Query, Field, InputType, Mutation, Arg } from 'type-graphql'
+import {
+	Resolver,
+	Query,
+	Field,
+	InputType,
+	Mutation,
+	Arg,
+	Authorized,
+} from 'type-graphql'
 import User from '../../models/User'
 import Transaction from '../../models/Transaction'
 
@@ -66,6 +74,7 @@ export default class TransactionResolver {
 		return transaction
 	}
 
+	@Authorized(['admin', 'bot'])
 	@Mutation(() => Transaction, {
 		description:
 			'Validates some transaction and moves currency if transaction is valid.',
