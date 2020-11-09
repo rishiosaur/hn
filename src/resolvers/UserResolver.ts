@@ -1,11 +1,5 @@
-import { Resolver, Query, Field, InputType, Mutation, Arg } from 'type-graphql'
+import { Resolver, Query, Mutation, Arg } from 'type-graphql'
 import { User } from '../models/User'
-
-@InputType()
-export class CreateUserInput {
-	@Field()
-	id: string
-}
 
 @Resolver()
 export class UserResolver {
@@ -38,14 +32,15 @@ export class UserResolver {
 	}
 
 	@Mutation(() => User)
-	async createUser(@Arg('data') data: CreateUserInput) {
-		const user = User.create(data)
+	async createUser(@Arg('id') id: string) {
+		const user = new User()
+		user.id = id
 		user.incomingTransactions = []
 		user.outgoingTransactions = []
 		user.balance = 0
 		await user.save()
 
-		return await User.findOneOrFail(data.id, {
+		return await User.findOneOrFail(id, {
 			relations: ['incomingTransactions', 'outgoingTransactions'],
 		})
 	}
