@@ -2,8 +2,8 @@ import 'reflect-metadata'
 import { createConnection } from 'typeorm'
 import { ApolloServer } from 'apollo-server'
 import { buildSchema } from 'type-graphql'
-import { UserResolver } from './resolvers/UserResolver'
-import { TransactionResolver } from './resolvers/TransactionResolver'
+import { UserResolver } from './resolvers/'
+import { TransactionResolver } from './resolvers/'
 
 async function main() {
 	await createConnection()
