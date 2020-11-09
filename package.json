@@ -45,5 +45,10 @@
 		"lint:check": "eslint \"./**/*.{js,ts,tsx,jsx}\" --quiet",
 		"check": "yarn run format:check && yarn run lint:check",
 		"check:fix": "yarn run format && yarn run lint"
+	},
+	"husky": {
+		"hooks": {
+			"pre-push": "yarn run check:fix"
+		}
 	}
 }
