@@ -89,7 +89,7 @@ export default class TransactionResolver {
 		description: 'Directly moves currency between two accounts.',
 	})
 	async send(@Arg('data') data: CreateTransaction) {
-		return await getManager().transaction(async () => {
+		return await getManager().transaction(async (manager) => {
 			const userQuery = getRepository(User)
 				.createQueryBuilder('user')
 				.select('*')
@@ -135,9 +135,9 @@ export default class TransactionResolver {
 			fromUser.outgoingTransactions.push(transaction)
 			toUser.incomingTransactions.push(transaction)
 
-			await transaction.save()
-			await toUser.save()
-			await fromUser.save()
+			await manager.save(transaction)
+			await manager.save(toUser)
+			await manager.save(fromUser)
 
 			return transaction
 		})
