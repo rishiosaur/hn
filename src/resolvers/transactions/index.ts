@@ -63,25 +63,42 @@ export default class TransactionResolver {
 			'Creates an unvalidated transaction between two users and some balance. Use `pay` for payment validation.',
 	})
 	async transact(@Arg('data') data: CreateTransaction) {
-		const transaction = new Transaction()
+		return await getManager().transaction(async (manager) => {
+			const transaction = new Transaction()
 
-		transaction.balance = data.balance
-		transaction.validated = false
+			transaction.balance = data.balance
+			transaction.validated = false
 
-		const fromUser = await User.findOneOrFail(data.from, {
-			relations: ['outgoingTransactions', 'incomingTransactions'],
+			const userQuery = getRepository(User)
+				.createQueryBuilder('user')
+				.select('*')
+				.useTransaction(true)
+				.setLock('pessimistic_write')
+				.select(['user.balance', 'user.id'])
+				.innerJoinAndSelect('user.incomingTransactions', 'incomingTransactions')
+				.innerJoinAndSelect('user.outgoingTransactions', 'outgoingTransactions')
+
+			const fromUser = (await userQuery
+				.where('user.id = :id', { id: data.from })
+				.getOne()) as User
+
+			const toUser = (await userQuery
+				.where('user.id = :id', { id: data.to })
+				.getOne()) as User
+
+			fromUser.outgoingTransactions.push(transaction)
+			toUser.incomingTransactions.push(transaction)
+
+			transaction.from = fromUser
+			transaction.to = toUser
+
+			await manager.save(transaction)
+
+			await manager.save(fromUser)
+			await manager.save(toUser)
+
+			return transaction
 		})
-		const toUser = await User.findOneOrFail(data.to, {
-			relations: ['outgoingTransactions', 'incomingTransactions'],
-		})
-		transaction.from = fromUser
-		transaction.to = toUser
-
-		await transaction.save()
-
-		fromUser.outgoingTransactions.push(transaction)
-		toUser.incomingTransactions.push(transaction)
-		return transaction
 	}
 
 	@Authorized(['bot', 'admin'])
@@ -149,23 +166,55 @@ export default class TransactionResolver {
 			'Validates some transaction and moves currency if transaction is valid.',
 	})
 	async pay(@Arg('id') id: string) {
-		const transaction = await Transaction.findOneOrFail(id, {
-			relations: ['from', 'to'],
+		return await getManager().transaction(async (manager) => {
+			const transaction = await getRepository(Transaction)
+				.createQueryBuilder('transaction')
+				.select('*')
+				.useTransaction(true)
+				.setLock('pessimistic_write')
+				.select([
+					'transaction.balance',
+					'transaction.id',
+					'transaction.validated',
+				])
+				.innerJoinAndSelect('transaction.from', 'from')
+				.innerJoinAndSelect('transaction.to', 'to')
+				.where('transaction.id = :id', { id })
+				.getOneOrFail()
+
+			if (!transaction.validated) {
+				if (transaction.from.balance > transaction.balance) {
+					transaction.from.balance -= transaction.balance
+					transaction.to.balance += transaction.balance
+					await transaction.from.save()
+					await transaction.to.save()
+
+					transaction.validated = true
+
+					await manager.save(transaction)
+				}
+			}
+
+			return transaction
 		})
 
-		if (!transaction.validated) {
-			if (transaction.from.balance > transaction.balance) {
-				transaction.from.balance -= transaction.balance
-				transaction.to.balance += transaction.balance
-				await transaction.from.save()
-				await transaction.to.save()
+		// const transaction = await Transaction.findOneOrFail(id, {
+		// 	relations: ['from', 'to'],
+		// })
 
-				transaction.validated = true
+		// if (!transaction.validated) {
+		// 	if (transaction.from.balance > transaction.balance) {
+		// 		transaction.from.balance -= transaction.balance
+		// 		transaction.to.balance += transaction.balance
+		// 		await transaction.from.save()
+		// 		await transaction.to.save()
 
-				await transaction.save()
-			}
-		}
+		// 		transaction.validated = true
 
-		return transaction
+		// 		await transaction.save()
+		// 	}
+		// }
+
+		// return transaction
 	}
 }
