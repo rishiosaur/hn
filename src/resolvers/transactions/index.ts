@@ -9,6 +9,16 @@ import {
 } from 'type-graphql'
 import User from '../../models/User'
 import Transaction from '../../models/Transaction'
+import {
+	EntityManager,
+	getConnection,
+	getRepository,
+	Repository,
+	TransactionManager,
+	TransactionRepository,
+	Transaction as TypeormTransaction,
+	getManager,
+} from 'typeorm'
 
 @InputType()
 export class CreateTransaction {
@@ -72,6 +82,65 @@ export default class TransactionResolver {
 		fromUser.outgoingTransactions.push(transaction)
 		toUser.incomingTransactions.push(transaction)
 		return transaction
+	}
+
+	@Authorized(['bot', 'admin'])
+	@Mutation(() => Transaction, {
+		description: 'Directly moves currency between two accounts.',
+	})
+	async send(@Arg('data') data: CreateTransaction) {
+		return await getManager().transaction(async () => {
+			const userQuery = getRepository(User)
+				.createQueryBuilder('user')
+				.select('*')
+				.useTransaction(true)
+				.setLock('pessimistic_write')
+				.select(['user.balance', 'user.id'])
+				.innerJoinAndSelect('user.incomingTransactions', 'incomingTransactions')
+				.innerJoinAndSelect('user.outgoingTransactions', 'outgoingTransactions')
+
+			const fromUser = (await userQuery
+				.where('user.id = :id', { id: data.from })
+				.getOne()) as User
+
+			const toUser = (await userQuery
+				.where('user.id = :id', { id: data.to })
+				.getOne()) as User
+
+			console.log(toUser)
+
+			let validated = false
+
+			if (fromUser.balance >= data.balance) {
+				fromUser.balance -= data.balance
+				toUser.balance += data.balance
+				validated = true
+				// TODO: Push paid webhook
+			}
+
+			const transactionRepository = await getRepository(Transaction)
+				.createQueryBuilder('transaction')
+				.useTransaction(true)
+				.setLock('pessimistic_write')
+
+			const transaction = Transaction.create()
+
+			transaction.balance = data.balance
+			transaction.validated = validated
+			transaction.from = fromUser
+			transaction.to = toUser
+
+			await transactionRepository.insert().values([transaction]).execute()
+
+			fromUser.outgoingTransactions.push(transaction)
+			toUser.incomingTransactions.push(transaction)
+
+			await transaction.save()
+			await toUser.save()
+			await fromUser.save()
+
+			return transaction
+		})
 	}
 
 	@Authorized(['admin', 'bot'])
