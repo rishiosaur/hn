@@ -38,7 +38,7 @@ async function main() {
 		},
 	})
 	await server.listen(process.env.PORT || 3000)
-	console.log('Server has started!')
+	console.log('💸 Currency server has started!')
 }
 
 main()
