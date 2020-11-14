@@ -28,4 +28,11 @@ export default class User extends BaseEntity {
 	})
 	@OneToMany(() => Transaction, (transaction) => transaction.to)
 	incomingTransactions: Transaction[]
+
+	@Column()
+	@Field(() => String)
+	secretHash: string
+
+	@Field(() => String)
+	secret: string
 }
