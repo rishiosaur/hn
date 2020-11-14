@@ -4,17 +4,17 @@ import { ApolloServer } from 'apollo-server'
 import { buildSchema } from 'type-graphql'
 import { UserResolver } from './resolvers/'
 import { TransactionResolver } from './resolvers/'
-import { customAuthChecker } from './auth/index'
-import { BotResolver } from './resolvers/'
+import { authChecker } from './auth/index'
 
 async function main() {
 	await createConnection()
 
 	const schema = await buildSchema({
-		resolvers: [UserResolver, TransactionResolver, BotResolver],
-		authChecker: customAuthChecker,
+		resolvers: [UserResolver, TransactionResolver],
+		authChecker: authChecker,
 		validate: false,
 	})
+
 	const server = new ApolloServer({
 		schema,
 		introspection: true,
