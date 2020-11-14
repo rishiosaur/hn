@@ -9,16 +9,7 @@ import {
 } from 'type-graphql'
 import User from '../../models/User'
 import Transaction from '../../models/Transaction'
-import {
-	EntityManager,
-	getConnection,
-	getRepository,
-	Repository,
-	TransactionManager,
-	TransactionRepository,
-	Transaction as TypeormTransaction,
-	getManager,
-} from 'typeorm'
+import { getRepository, getManager } from 'typeorm'
 
 @InputType()
 export class CreateTransaction {
