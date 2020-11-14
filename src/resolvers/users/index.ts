@@ -1,5 +1,6 @@
-import { Resolver, Query, Mutation, Arg } from 'type-graphql'
+import { Resolver, Query, Mutation, Arg, Authorized } from 'type-graphql'
 import User from '../../models/User'
+import { makeString, hashCode } from '../../util/index'
 
 @Resolver()
 export default class UserResolver {
@@ -35,6 +36,7 @@ export default class UserResolver {
 		})
 	}
 
+	@Authorized('admin')
 	@Mutation(() => User, {
 		description: 'Creates a user using a Slack ID.',
 	})
@@ -44,10 +46,19 @@ export default class UserResolver {
 		user.incomingTransactions = []
 		user.outgoingTransactions = []
 		user.balance = 0
+		const secret = makeString(32)
+		const secretHash = hashCode(secret).toString()
+
+		user.secret = secret
+		user.secretHash = secretHash
+
 		await user.save()
 
-		return await User.findOneOrFail(id, {
+		const u = await User.findOneOrFail(id, {
 			relations: ['incomingTransactions', 'outgoingTransactions'],
 		})
+		u.secret = secret
+
+		return u
 	}
 }

@@ -62,20 +62,18 @@ export default class TransactionResolver {
 
 			const userQuery = getRepository(User)
 				.createQueryBuilder('user')
-				.select('*')
+				.where('user.id = :id', { id: 'rishiosaur' })
 				.useTransaction(true)
-				.setLock('pessimistic_write')
-				.select(['user.balance', 'user.id'])
-				.innerJoinAndSelect('user.incomingTransactions', 'incomingTransactions')
-				.innerJoinAndSelect('user.outgoingTransactions', 'outgoingTransactions')
+				.leftJoinAndSelect('user.incomingTransactions', 'incomingTransactions')
+				.leftJoinAndSelect('user.outgoingTransactions', 'outgoingTransactions')
 
 			const fromUser = (await userQuery
 				.where('user.id = :id', { id: data.from })
-				.getOne()) as User
+				.getOneOrFail()) as User
 
 			const toUser = (await userQuery
 				.where('user.id = :id', { id: data.to })
-				.getOne()) as User
+				.getOneOrFail()) as User
 
 			fromUser.outgoingTransactions.push(transaction)
 			toUser.incomingTransactions.push(transaction)
@@ -92,7 +90,7 @@ export default class TransactionResolver {
 		})
 	}
 
-	@Authorized(['bot', 'admin'])
+	@Authorized(['authed', 'admin'])
 	@Mutation(() => Transaction, {
 		description: 'Directly moves currency between two accounts.',
 	})
@@ -100,22 +98,17 @@ export default class TransactionResolver {
 		return await getManager().transaction(async (manager) => {
 			const userQuery = getRepository(User)
 				.createQueryBuilder('user')
-				.select('*')
 				.useTransaction(true)
-				.setLock('pessimistic_write')
-				.select(['user.balance', 'user.id'])
-				.innerJoinAndSelect('user.incomingTransactions', 'incomingTransactions')
-				.innerJoinAndSelect('user.outgoingTransactions', 'outgoingTransactions')
+				.leftJoinAndSelect('user.incomingTransactions', 'incomingTransactions')
+				.leftJoinAndSelect('user.outgoingTransactions', 'outgoingTransactions')
 
 			const fromUser = (await userQuery
 				.where('user.id = :id', { id: data.from })
-				.getOne()) as User
+				.getOneOrFail()) as User
 
 			const toUser = (await userQuery
 				.where('user.id = :id', { id: data.to })
-				.getOne()) as User
-
-			console.log(toUser)
+				.getOneOrFail()) as User
 
 			let validated = false
 
@@ -129,7 +122,6 @@ export default class TransactionResolver {
 			const transactionRepository = await getRepository(Transaction)
 				.createQueryBuilder('transaction')
 				.useTransaction(true)
-				.setLock('pessimistic_write')
 
 			const transaction = Transaction.create()
 
@@ -151,7 +143,7 @@ export default class TransactionResolver {
 		})
 	}
 
-	@Authorized(['admin', 'bot'])
+	@Authorized(['admin', 'authed'])
 	@Mutation(() => Transaction, {
 		description:
 			'Validates some transaction and moves currency if transaction is valid.',
@@ -160,16 +152,9 @@ export default class TransactionResolver {
 		return await getManager().transaction(async (manager) => {
 			const transaction = await getRepository(Transaction)
 				.createQueryBuilder('transaction')
-				.select('*')
 				.useTransaction(true)
-				.setLock('pessimistic_write')
-				.select([
-					'transaction.balance',
-					'transaction.id',
-					'transaction.validated',
-				])
-				.innerJoinAndSelect('transaction.from', 'from')
-				.innerJoinAndSelect('transaction.to', 'to')
+				.leftJoinAndSelect('transaction.from', 'from')
+				.leftJoinAndSelect('transaction.to', 'to')
 				.where('transaction.id = :id', { id })
 				.getOneOrFail()
 
@@ -188,24 +173,5 @@ export default class TransactionResolver {
 
 			return transaction
 		})
-
-		// const transaction = await Transaction.findOneOrFail(id, {
-		// 	relations: ['from', 'to'],
-		// })
-
-		// if (!transaction.validated) {
-		// 	if (transaction.from.balance > transaction.balance) {
-		// 		transaction.from.balance -= transaction.balance
-		// 		transaction.to.balance += transaction.balance
-		// 		await transaction.from.save()
-		// 		await transaction.to.save()
-
-		// 		transaction.validated = true
-
-		// 		await transaction.save()
-		// 	}
-		// }
-
-		// return transaction
 	}
 }
