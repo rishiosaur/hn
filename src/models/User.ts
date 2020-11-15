@@ -33,6 +33,8 @@ export default class User extends BaseEntity {
 	@Field(() => String)
 	secretHash: string
 
-	@Field(() => String)
+	@Field(() => String, {
+		nullable: true,
+	})
 	secret: string
 }

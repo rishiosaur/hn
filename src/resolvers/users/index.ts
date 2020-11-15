@@ -41,6 +41,14 @@ export default class UserResolver {
 		description: 'Creates a user using a Slack ID.',
 	})
 	async createUser(@Arg('id') id: string) {
+		const u = await User.findOne(id, {
+			relations: ['incomingTransactions', 'outgoingTransactions'],
+		})
+
+		if (!!u) {
+			return u
+		}
+
 		const user = new User()
 		user.id = id
 		user.incomingTransactions = []
@@ -54,11 +62,12 @@ export default class UserResolver {
 
 		await user.save()
 
-		const u = await User.findOneOrFail(id, {
+		const _u = await User.findOneOrFail(id, {
 			relations: ['incomingTransactions', 'outgoingTransactions'],
 		})
-		u.secret = secret
 
-		return u
+		_u.secret = secret
+
+		return _u
 	}
 }
