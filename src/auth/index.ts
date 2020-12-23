@@ -44,7 +44,7 @@ export const authChecker: AuthChecker<any> = async (e: any, a: any) => {
 		const from = await User.findOneOrFail(fromID)
 
 		authed = from.secretHash === hashCode(headers.secret).toString()
-	} // secret = 3Q9HneBKaDFX5iZ6G9oZQmKtaHLIJsx7
+	} 
 
 	return authed // or false if access is denied
 }
