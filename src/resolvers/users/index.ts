@@ -70,4 +70,47 @@ export default class UserResolver {
 
 		return _u
 	}
+
+	@Authorized('admin')
+	@Mutation(() => User, {
+		description: 'Resets a user token.',
+	})
+	async resetUserSecret(@Arg('id') id: string) {
+		const u = await User.findOne(id, {
+			relations: ['incomingTransactions', 'outgoingTransactions'],
+		})
+
+		if (!!u) {
+			const secret = makeString(32)
+			const secretHash = hashCode(secret).toString()
+
+			u.secret = secret
+			u.secretHash = secretHash
+
+			await u.save()
+
+			return u
+		}
+
+		const user = new User()
+		user.id = id
+		user.incomingTransactions = []
+		user.outgoingTransactions = []
+		user.balance = 0
+		const secret = makeString(32)
+		const secretHash = hashCode(secret).toString()
+
+		user.secret = secret
+		user.secretHash = secretHash
+
+		await user.save()
+
+		const _u = await User.findOneOrFail(id, {
+			relations: ['incomingTransactions', 'outgoingTransactions'],
+		})
+
+		_u.secret = secret
+
+		return _u
+	}
 }
