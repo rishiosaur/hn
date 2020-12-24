@@ -18,14 +18,17 @@ export const authChecker: AuthChecker<any> = async (e: any, a: any) => {
 		['send'].includes(fieldName) &&
 		headers.secret
 	) {
-		const fromID = fieldNodes[0].arguments[0].value.fields.filter(
-			(x: any) => x.name.value === 'from'
-		)[0].value.value
+		const fromID =
+			fieldNodes[0].arguments[0].value.fields.filter(
+				(x: any) => x.name.value === 'from'
+			)[0].value.value ||
+			e.info.variableValues[
+				fieldNodes[0].arguments[0].value.fields.filter(
+					(x: any) => x.name.value === 'from'
+				)[0].value.name.value
+			]
 
 		const from = await User.findOneOrFail(fromID)
-
-		console.log(from.secretHash)
-		console.log(hashCode(headers.secret).toString())
 
 		authed = from.secretHash === hashCode(headers.secret).toString()
 	} else if (
@@ -33,7 +36,9 @@ export const authChecker: AuthChecker<any> = async (e: any, a: any) => {
 		['pay'].includes(fieldName) &&
 		headers.secret
 	) {
-		const transactionID = fieldNodes[0].arguments[0].value.value
+		const transactionID =
+			fieldNodes[0].arguments[0].value.value ||
+			e.info.variableValues[fieldNodes[0].arguments[0].value.name.value]
 
 		const transaction = await Transaction.findOneOrFail(transactionID, {
 			relations: ['from', 'to'],
@@ -44,7 +49,6 @@ export const authChecker: AuthChecker<any> = async (e: any, a: any) => {
 		const from = await User.findOneOrFail(fromID)
 
 		authed = from.secretHash === hashCode(headers.secret).toString()
-	} // secret = 3Q9HneBKaDFX5iZ6G9oZQmKtaHLIJsx7
-
+	}
 	return authed // or false if access is denied
 }
