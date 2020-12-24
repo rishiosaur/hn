@@ -1,23 +1,45 @@
 import { Resolver, Query, Mutation, Arg, Authorized } from 'type-graphql'
 import User from '../../models/User'
 import { makeString, hashCode } from '../../util/index'
+import { PaginationInput } from '../../models/Pagination'
 
 @Resolver()
 export default class UserResolver {
 	@Query(() => [User], {
 		description: 'Finds all users. 2n relationships.',
 	})
-	users() {
-		return User.find({
-			relations: [
-				'incomingTransactions',
-				'outgoingTransactions',
-				'outgoingTransactions.to',
-				'outgoingTransactions.from',
-				'incomingTransactions.to',
-				'incomingTransactions.from',
-			],
+	async users(
+		@Arg('options', {
+			nullable: true,
 		})
+		options: PaginationInput
+	) {
+		if (options.take) {
+			return User.find({
+				relations: [
+					'incomingTransactions',
+					'outgoingTransactions',
+					'outgoingTransactions.to',
+					'outgoingTransactions.from',
+					'incomingTransactions.to',
+					'incomingTransactions.from',
+				],
+				skip: options.skip || 0 + options.take * (options.page || 0),
+				take: options.take,
+			})
+		} else {
+			return User.find({
+				relations: [
+					'incomingTransactions',
+					'outgoingTransactions',
+					'outgoingTransactions.to',
+					'outgoingTransactions.from',
+					'incomingTransactions.to',
+					'incomingTransactions.from',
+				],
+				skip: options.skip || 0,
+			})
+		}
 	}
 
 	@Query(() => User, {
