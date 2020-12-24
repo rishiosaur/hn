@@ -10,6 +10,7 @@ import {
 import User from '../../models/User'
 import Transaction from '../../models/Transaction'
 import { getRepository, getManager } from 'typeorm'
+import { PaginationInput } from '../../models/Pagination'
 
 @InputType()
 export class CreateTransaction {
@@ -34,10 +35,24 @@ export default class TransactionResolver {
 	@Query(() => [Transaction], {
 		description: 'Returns all transactions. Pretty slow.',
 	})
-	async transactions() {
-		return await Transaction.find({
-			relations: ['from', 'to'],
+	async transactions(
+		@Arg('options', {
+			nullable: true,
 		})
+		options: PaginationInput
+	) {
+		if (options.take) {
+			return Transaction.find({
+				relations: ['from', 'to'],
+				skip: options.skip || 0 + options.take * (options.page || 0),
+				take: options.take,
+			})
+		} else {
+			return Transaction.find({
+				relations: ['from', 'to'],
+				skip: options.skip || 0,
+			})
+		}
 	}
 
 	@Query(() => Transaction, {
