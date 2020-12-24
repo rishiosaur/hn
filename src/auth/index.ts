@@ -50,5 +50,6 @@ export const authChecker: AuthChecker<any> = async (e: any, a: any) => {
 
 		authed = from.secretHash === hashCode(headers.secret).toString()
 	}
+
 	return authed // or false if access is denied
 }
