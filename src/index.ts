@@ -5,12 +5,13 @@ import { buildSchema } from 'type-graphql'
 import { UserResolver } from './resolvers/'
 import { TransactionResolver } from './resolvers/'
 import { authChecker } from './auth/index'
+import { UserFieldResolver } from './models/User'
 
 async function main() {
 	await createConnection()
 
 	const schema = await buildSchema({
-		resolvers: [UserResolver, TransactionResolver],
+		resolvers: [UserResolver, TransactionResolver, UserFieldResolver],
 		authChecker: authChecker,
 		validate: false,
 	})
