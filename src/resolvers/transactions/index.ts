@@ -41,18 +41,16 @@ export default class TransactionResolver {
 		})
 		options: PaginationInput
 	) {
-		if (options.take) {
-			return Transaction.find({
-				relations: ['from', 'to'],
-				skip: options.skip || 0 + options.take * (options.page || 0),
-				take: options.take,
-			})
-		} else {
-			return Transaction.find({
-				relations: ['from', 'to'],
-				skip: options.skip || 0,
-			})
-		}
+		return Transaction.find({
+			relations: ['from', 'to'],
+			skip: options.skip || 0 + (options.take || 0) * (options.page || 0),
+			take: options.take,
+			...(options.sort && {
+				order: {
+					[options.sort.field]: options.sort.order || 'ASC',
+				},
+			}),
+		})
 	}
 
 	@Query(() => Transaction, {
