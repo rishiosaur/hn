@@ -14,32 +14,23 @@ export default class UserResolver {
 		})
 		options: PaginationInput
 	) {
-		if (options.take) {
-			return User.find({
-				relations: [
-					'incomingTransactions',
-					'outgoingTransactions',
-					'outgoingTransactions.to',
-					'outgoingTransactions.from',
-					'incomingTransactions.to',
-					'incomingTransactions.from',
-				],
-				skip: options.skip || 0 + options.take * (options.page || 0),
-				take: options.take,
-			})
-		} else {
-			return User.find({
-				relations: [
-					'incomingTransactions',
-					'outgoingTransactions',
-					'outgoingTransactions.to',
-					'outgoingTransactions.from',
-					'incomingTransactions.to',
-					'incomingTransactions.from',
-				],
-				skip: options.skip || 0,
-			})
-		}
+		return User.find({
+			relations: [
+				'incomingTransactions',
+				'outgoingTransactions',
+				'outgoingTransactions.to',
+				'outgoingTransactions.from',
+				'incomingTransactions.to',
+				'incomingTransactions.from',
+			],
+			skip: options.skip || 0 + (options.take || 0) * (options.page || 0),
+			take: options.take,
+			...(options.sort && {
+				order: {
+					[options.sort.field]: options.sort.order || 'ASC',
+				},
+			}),
+		})
 	}
 
 	@Query(() => User, {
