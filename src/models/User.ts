@@ -75,10 +75,7 @@ export class UserFieldResolver {
 			x = x.take(options.take)
 		}
 
-		const z = await x.getMany()
-
-		console.log(z)
-		return z
+		return x.getMany()
 	}
 
 	@FieldResolver(() => [Transaction])
@@ -106,9 +103,6 @@ export class UserFieldResolver {
 			x = x.take(options.take)
 		}
 
-		const z = await x.getMany()
-
-		console.log(z)
-		return z
+		return x.getMany()
 	}
 }

@@ -67,6 +67,13 @@ export default class TransactionResolver {
 			'Creates an unvalidated transaction between two users and some balance. Use `pay` for payment validation.',
 	})
 	async transact(@Arg('data') data: CreateTransaction) {
+		if (data.from == data.to) {
+			throw new Error(
+				'Participants in transaction cannot have same ID. Each account must be distinct.'
+			)
+			return
+		}
+
 		return await getManager().transaction(async (manager) => {
 			const transaction = new Transaction()
 
@@ -108,6 +115,13 @@ export default class TransactionResolver {
 		description: 'Directly moves currency between two accounts.',
 	})
 	async send(@Arg('data') data: CreateTransaction) {
+		if (data.from == data.to) {
+			throw new Error(
+				'Participants in transaction cannot have same ID. Each account must be distinct.'
+			)
+			return
+		}
+
 		return await getManager().transaction(async (manager) => {
 			const userQuery = getRepository(User)
 				.createQueryBuilder('user')
