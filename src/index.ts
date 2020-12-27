@@ -6,12 +6,18 @@ import { UserResolver } from './resolvers/'
 import { TransactionResolver } from './resolvers/'
 import { authChecker } from './auth/index'
 import { UserFieldResolver } from './models/User'
+import { WebhookResolver } from './resolvers/'
 
 async function main() {
 	await createConnection()
 
 	const schema = await buildSchema({
-		resolvers: [UserResolver, TransactionResolver, UserFieldResolver],
+		resolvers: [
+			UserResolver,
+			TransactionResolver,
+			UserFieldResolver,
+			WebhookResolver,
+		],
 		authChecker: authChecker,
 		validate: false,
 	})

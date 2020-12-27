@@ -7,9 +7,11 @@ import {
 	FieldResolver,
 	Root,
 	Arg,
+	Authorized,
 } from 'type-graphql'
 import Transaction from './Transaction'
 import { PaginationInput } from './Pagination'
+import { PaymentWebhook, TransactionWebhook } from './Webhook'
 
 @Entity()
 @ObjectType()
@@ -46,6 +48,22 @@ export default class User extends BaseEntity {
 		nullable: true,
 	})
 	secret: string
+
+	@Authorized(['authed', 'admin'])
+	@Field(() => [PaymentWebhook], {
+		description: 'All payment webhooks for this user.',
+		defaultValue: [],
+	})
+	@OneToMany(() => PaymentWebhook, (transaction) => transaction.user)
+	paymentWebhooks: PaymentWebhook[]
+
+	@Authorized(['authed', 'admin'])
+	@Field(() => [TransactionWebhook], {
+		description: 'All payment webhooks for this user.',
+		defaultValue: [],
+	})
+	@OneToMany(() => TransactionWebhook, (transaction) => transaction.user)
+	transactionWebhooks: TransactionWebhook[]
 }
 
 @Resolver((of) => User)
