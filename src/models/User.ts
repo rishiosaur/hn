@@ -10,6 +10,7 @@ import {
 } from 'type-graphql'
 import Transaction from './Transaction'
 import { PaginationInput } from './Pagination'
+import { PaymentWebhook, TransactionWebhook } from './Webhook'
 
 @Entity()
 @ObjectType()
@@ -46,6 +47,18 @@ export default class User extends BaseEntity {
 		nullable: true,
 	})
 	secret: string
+
+	@Field(() => [PaymentWebhook], {
+		description: 'All payment webhooks for this user.',
+	})
+	@OneToMany(() => PaymentWebhook, (transaction) => transaction.user)
+	paymentWebhooks: PaymentWebhook[]
+
+	@Field(() => [TransactionWebhook], {
+		description: 'All payment webhooks for this user.',
+	})
+	@OneToMany(() => TransactionWebhook, (transaction) => transaction.user)
+	transactionWebhooks: TransactionWebhook[]
 }
 
 @Resolver((of) => User)
