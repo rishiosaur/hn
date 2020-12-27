@@ -27,11 +27,11 @@ export default class UserResolver {
 	) {
 		return User.find({
 			relations: allUserRelations,
-			skip: options.skip || 0 + (options.take || 0) * (options.page || 0),
-			take: options.take,
-			...(options.sort && {
+			skip: options?.skip || 0 + (options?.take || 0) * (options.page || 0),
+			take: options?.take,
+			...(options?.sort && {
 				order: {
-					[options.sort.field]: options.sort.order || 'ASC',
+					[options?.sort.field]: options?.sort.order || 'ASC',
 				},
 			}),
 		})
