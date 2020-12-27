@@ -51,7 +51,7 @@ export default class TransactionResolver {
 	) {
 		return Transaction.find({
 			relations: ['from', 'to'],
-			skip: options?.skip || 0 + (options?.take || 0) * (options.page || 0),
+			skip: options?.skip || 0 + (options?.take || 0) * (options?.page || 0),
 			take: options?.take,
 			...(options?.sort && {
 				order: {
