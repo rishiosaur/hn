@@ -11,6 +11,7 @@ import User from '../../models/User'
 import Transaction from '../../models/Transaction'
 import { getRepository, getManager } from 'typeorm'
 import { PaginationInput } from '../../models/Pagination'
+import axios from 'axios'
 
 @InputType()
 export class CreateTransaction {
@@ -106,6 +107,16 @@ export default class TransactionResolver {
 			await manager.save(fromUser)
 			await manager.save(toUser)
 
+			axios.get(
+				(process.env.WEBHOOK_URL as string) +
+					`/api/${data.to}/transactions/${transaction.id}`,
+				{
+					headers: {
+						token: process.env.ADMIN,
+					},
+				}
+			)
+
 			return transaction
 		})
 	}
@@ -122,7 +133,7 @@ export default class TransactionResolver {
 			return
 		}
 
-		return await getManager().transaction(async (manager) => {
+		return getManager().transaction(async (manager) => {
 			const userQuery = getRepository(User)
 				.createQueryBuilder('user')
 				.useTransaction(true)
@@ -166,6 +177,16 @@ export default class TransactionResolver {
 			await manager.save(toUser)
 			await manager.save(fromUser)
 
+			axios.get(
+				(process.env.WEBHOOK_URL as string) +
+					`/api/${data.to}/payments/${transaction.id}`,
+				{
+					headers: {
+						token: process.env.ADMIN,
+					},
+				}
+			)
+
 			return transaction
 		})
 	}
@@ -176,7 +197,7 @@ export default class TransactionResolver {
 			'Validates some transaction and moves currency if transaction is valid.',
 	})
 	async pay(@Arg('id') id: string) {
-		return await getManager().transaction(async (manager) => {
+		return getManager().transaction(async (manager) => {
 			const transaction = await getRepository(Transaction)
 				.createQueryBuilder('transaction')
 				.useTransaction(true)
@@ -195,6 +216,16 @@ export default class TransactionResolver {
 					transaction.validated = true
 
 					await manager.save(transaction)
+
+					axios.get(
+						(process.env.WEBHOOK_URL as string) +
+							`/api/${transaction.to.id}/payments/${transaction.id}`,
+						{
+							headers: {
+								token: process.env.ADMIN,
+							},
+						}
+					)
 				}
 			}
 
