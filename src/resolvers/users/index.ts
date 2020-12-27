@@ -3,6 +3,17 @@ import User from '../../models/User'
 import { makeString, hashCode } from '../../util/index'
 import { PaginationInput } from '../../models/Pagination'
 
+export const allUserRelations = [
+	'incomingTransactions',
+	'outgoingTransactions',
+	'outgoingTransactions.to',
+	'outgoingTransactions.from',
+	'incomingTransactions.to',
+	'incomingTransactions.from',
+	'paymentWebhooks',
+	'transactionWebhooks',
+]
+
 @Resolver()
 export default class UserResolver {
 	@Query(() => [User], {
@@ -15,14 +26,7 @@ export default class UserResolver {
 		options: PaginationInput
 	) {
 		return User.find({
-			relations: [
-				'incomingTransactions',
-				'outgoingTransactions',
-				'outgoingTransactions.to',
-				'outgoingTransactions.from',
-				'incomingTransactions.to',
-				'incomingTransactions.from',
-			],
+			relations: allUserRelations,
 			skip: options.skip || 0 + (options.take || 0) * (options.page || 0),
 			take: options.take,
 			...(options.sort && {
@@ -38,14 +42,7 @@ export default class UserResolver {
 	})
 	async user(@Arg('id') id: string) {
 		return await User.findOneOrFail(id, {
-			relations: [
-				'incomingTransactions',
-				'outgoingTransactions',
-				'outgoingTransactions.to',
-				'outgoingTransactions.from',
-				'incomingTransactions.to',
-				'incomingTransactions.from',
-			],
+			relations: allUserRelations,
 		})
 	}
 
