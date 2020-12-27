@@ -23,9 +23,7 @@ export class PaymentWebhook extends BaseEntity {
 		description: 'URL to hit on webhook.',
 	})
 	url: string
-	@Field(() => User, {
-		description: 'User that this webhook triggers for.',
-	})
+
 	@ManyToOne(() => User, (user) => user.paymentWebhooks)
 	user: User
 }
@@ -45,9 +43,6 @@ export class TransactionWebhook extends BaseEntity {
 	})
 	url: string
 
-	@Field(() => User, {
-		description: 'User that this webhook triggers for.',
-	})
 	@ManyToOne(() => User, (user) => user.transactionWebhooks)
 	user: User
 }
