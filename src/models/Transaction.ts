@@ -40,4 +40,10 @@ export default class Transaction extends BaseEntity {
 	})
 	@Column({ default: false })
 	validated: boolean
+
+	@Field(() => String, {
+		description: 'A reason for a transaction.',
+	})
+	@Column({ default: '', nullable: true })
+	for: string
 }
