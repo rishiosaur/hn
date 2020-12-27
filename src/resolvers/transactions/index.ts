@@ -29,6 +29,13 @@ export class CreateTransaction {
 		description: 'The amount being transacted',
 	})
 	balance: number
+
+	@Field({
+		description: 'Reason for transaction',
+		nullable: true,
+		defaultValue: '',
+	})
+	for: string
 }
 
 @Resolver()
@@ -101,6 +108,7 @@ export default class TransactionResolver {
 
 			transaction.from = fromUser
 			transaction.to = toUser
+			transaction.for = data.for || ''
 
 			await manager.save(transaction)
 
@@ -167,6 +175,7 @@ export default class TransactionResolver {
 			transaction.validated = validated
 			transaction.from = fromUser
 			transaction.to = toUser
+			transaction.for = data.for || ''
 
 			await transactionRepository.insert().values([transaction]).execute()
 
