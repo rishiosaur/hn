@@ -165,7 +165,7 @@ export default class TransactionResolver {
 				// TODO: Push paid webhook
 			}
 
-			const transactionRepository = await getRepository(Transaction)
+			const transactionRepository = getRepository(Transaction)
 				.createQueryBuilder('transaction')
 				.useTransaction(true)
 
