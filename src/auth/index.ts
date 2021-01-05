@@ -49,6 +49,24 @@ export const authChecker: AuthChecker<any> = async (e: any, a: any) => {
 		const from = await User.findOneOrFail(fromID)
 
 		authed = from.secretHash === hashCode(headers.secret).toString()
+	} else if (
+		a.includes('authed') &&
+		['createWebhook'].includes(fieldName) &&
+		headers.secret
+	) {
+		const fromID =
+			fieldNodes[0].arguments[0].value.fields.filter(
+				(x: any) => x.name.value === 'for'
+			)[0].value.value ||
+			e.info.variableValues[
+				fieldNodes[0].arguments[0].value.fields.filter(
+					(x: any) => x.name.value === 'for'
+				)[0].value.name.value
+			]
+
+		const from = await User.findOneOrFail(fromID)
+
+		authed = from.secretHash === hashCode(headers.secret).toString()
 	}
 
 	return authed // or false if access is denied
