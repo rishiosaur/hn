@@ -1,7 +1,8 @@
 {
-	"name": "hn",
-	"version": "1.0.0",
-	"main": "index.js",
+	"name": "@rishiosaur/hn",
+	"version": "0.0.1",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
 	"license": "MIT",
 	"dependencies": {
 		"apollo-server": "^2.19.0",
@@ -47,11 +48,16 @@
 		"lint": "eslint \"./**/*.{js,ts,tsx,jsx}\" --quiet --fix",
 		"lint:check": "eslint \"./**/*.{js,ts,tsx,jsx}\" --quiet",
 		"check": "yarn run format:check && yarn run lint:check",
-		"check:fix": "yarn run format && yarn run lint"
+		"check:fix": "yarn run format && yarn run lint",
+		"prepublish": "tsc",
+		"release": "release-it"
 	},
 	"husky": {
 		"hooks": {
 			"pre-push": "yarn run check:fix"
 		}
+	},
+	"publishConfig": {
+		"access": "public"
 	}
 }
