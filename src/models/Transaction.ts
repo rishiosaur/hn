@@ -10,7 +10,7 @@ import { ObjectType, Field, ID } from 'type-graphql'
 
 @Entity()
 @ObjectType()
-export default class Transaction extends BaseEntity {
+export default class Transaction extends BaseEntity implements Transaction {
 	@PrimaryGeneratedColumn()
 	@Field(() => ID, {
 		description: 'An autoincrementing identifier for a transaction.',
