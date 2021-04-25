@@ -26,5 +26,5 @@ export function makeString(length: number) {
  * @return {string} a hash code value for the given string.
  */
 export const hashCode = (s: string) => {
-	return createHash('sha256').update(s).digest('hex');
+	return createHash('sha256').update(s).digest('hex')
 }
