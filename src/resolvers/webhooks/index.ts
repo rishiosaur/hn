@@ -78,7 +78,6 @@ export default class WebhookResolver {
 			throw new Error(
 				"The only possible events compatible with webhooks are 'payment' and 'transaction'. Please try again."
 			)
-			return
 		}
 	}
 }
