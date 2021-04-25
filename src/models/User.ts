@@ -66,7 +66,7 @@ export default class User extends BaseEntity {
 	transactionWebhooks: TransactionWebhook[]
 }
 
-@Resolver((of) => User)
+@Resolver(() => User)
 export class UserFieldResolver {
 	@FieldResolver(() => [Transaction])
 	async outgoingTransactions(
