@@ -6,7 +6,6 @@ import {
 	ManyToOne,
 } from 'typeorm'
 import { ObjectType, Field, ID } from 'type-graphql'
-import { FILE } from 'dns'
 import User from './User'
 
 @Entity()
@@ -24,6 +23,7 @@ export class PaymentWebhook extends BaseEntity {
 	})
 	url: string
 
+	@Field(() => User)
 	@ManyToOne(() => User, (user) => user.paymentWebhooks)
 	user: User
 }
@@ -43,6 +43,7 @@ export class TransactionWebhook extends BaseEntity {
 	})
 	url: string
 
+	@Field(() => User)
 	@ManyToOne(() => User, (user) => user.transactionWebhooks)
 	user: User
 }
