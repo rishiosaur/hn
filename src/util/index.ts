@@ -1,3 +1,5 @@
+import { createHash } from 'crypto'
+
 export function makeString(length: number) {
 	let result = ''
 	const characters =
@@ -21,13 +23,8 @@ export function makeString(length: number) {
  * (The hash value of the empty string is zero.)
  *
  * @param {string} s a string
- * @return {number} a hash code value for the given string.
+ * @return {string} a hash code value for the given string.
  */
 export const hashCode = (s: string) => {
-	let h = 0,
-		i = 0
-
-	const l = s.length
-	if (l > 0) while (i < l) h = ((h << 5) - h + s.charCodeAt(i++)) | 0
-	return h
+	return createHash('sha256').update(s).digest('hex');
 }
