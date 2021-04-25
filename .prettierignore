@@ -12,3 +12,4 @@ yarn.lock
 LICENSE
 *.png
 .idea
+yarn-error.log
