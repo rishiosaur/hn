@@ -6,6 +6,9 @@
 		"esModuleInterop": true,
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
-		"strictPropertyInitialization": false
+		"strictPropertyInitialization": false,
+		"declaration": true,
+		"outDir": "dist",
+		"noEmit": true
 	}
 }
