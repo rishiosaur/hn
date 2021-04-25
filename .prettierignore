@@ -11,3 +11,4 @@ yarn.lock
 .env
 LICENSE
 *.png
+.idea
