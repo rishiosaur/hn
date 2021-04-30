@@ -11,13 +11,7 @@ import { PaymentWebhook, TransactionWebhook } from './models/Webhook'
 import Transaction from './models/Transaction'
 
 async function main() {
-	await createConnection({
-		entities: [User, TransactionWebhook, PaymentWebhook, Transaction],
-		url: process.env.TYPEORM_URL,
-		synchronize: true,
-		// connection: 'postgres',
-		type: 'postgres',
-	})
+	await createConnection()
 
 	const schema = await buildSchema({
 		resolvers: [
