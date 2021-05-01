@@ -2,6 +2,7 @@ import { Resolver, Query, Mutation, Arg, Authorized } from 'type-graphql'
 import User from '../../models/User'
 import { makeString, hashCode } from '../../util/index'
 import { PaginationInput } from '../../models/Pagination'
+import { Big } from 'big.js'
 
 export const allUserRelations = [
 	'incomingTransactions',
@@ -63,7 +64,7 @@ export default class UserResolver {
 		user.id = id
 		user.incomingTransactions = []
 		user.outgoingTransactions = []
-		user.balance = 0
+		user.balance = new Big(0)
 		const secret = makeString(32)
 		const secretHash = hashCode(secret).toString()
 
@@ -106,7 +107,7 @@ export default class UserResolver {
 		user.id = id
 		user.incomingTransactions = []
 		user.outgoingTransactions = []
-		user.balance = 0
+		user.balance = new Big(0)
 		const secret = makeString(32)
 		const secretHash = hashCode(secret).toString()
 
