@@ -1,3 +1,5 @@
+import Big from 'big.js'
+
 export interface Webhook {
 	id: string
 	url: string
@@ -28,10 +30,13 @@ export interface Transaction {
 }
 
 export class ColumnNumericTransformer {
-	to(data: number): number {
-		return data
+	to(data: Big): string {
+		console.log(data
+		)
+		return new Big(data).toFixed(18)
 	}
-	from(data: string): number {
-		return parseFloat(data)
+	from(data: string): Big {
+		console.log(data)
+		return new Big(data ?? 0)
 	}
 }
