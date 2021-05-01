@@ -9,6 +9,7 @@ import User, { UserFieldResolver } from './models/User'
 import { WebhookResolver } from './resolvers/'
 import { PaymentWebhook, TransactionWebhook } from './models/Webhook'
 import Transaction from './models/Transaction'
+import Big from 'big.js'
 
 async function main() {
 	await createConnection()

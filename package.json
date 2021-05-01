@@ -5,9 +5,11 @@
 	"types": "dist/index.d.ts",
 	"license": "MIT",
 	"dependencies": {
+		"@types/big.js": "^6.0.2",
 		"apollo-server": "^2.19.0",
 		"axios": "^0.21.1",
 		"bcrypt": "^5.0.0",
+		"big.js": "^6.1.0",
 		"class-validator": "^0.12.2",
 		"dotenv": "^8.2.0",
 		"pg": "^8.4.2",

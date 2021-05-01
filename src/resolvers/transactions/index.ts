@@ -12,6 +12,7 @@ import Transaction from '../../models/Transaction'
 import { getRepository, getManager } from 'typeorm'
 import { PaginationInput } from '../../models/Pagination'
 import axios from 'axios'
+import { Big } from 'big.js'
 
 @InputType()
 export class CreateTransaction {
@@ -85,7 +86,7 @@ export default class TransactionResolver {
 		return await getManager().transaction(async (manager) => {
 			const transaction = new Transaction()
 
-			transaction.balance = data.balance
+			transaction.balance = new Big(data.balance)
 			transaction.validated = false
 
 			const userQuery = getRepository(User)
@@ -158,9 +159,9 @@ export default class TransactionResolver {
 
 			let validated = false
 
-			if (fromUser.balance >= data.balance) {
-				fromUser.balance -= data.balance
-				toUser.balance += data.balance
+			if (fromUser.balance.gt(data.balance)) {
+				fromUser.balance = fromUser.balance.minus(data.balance)
+				toUser.balance = toUser.balance.plus(data.balance)
 				validated = true
 				// TODO: Push paid webhook
 			}
@@ -171,7 +172,7 @@ export default class TransactionResolver {
 
 			const transaction = Transaction.create()
 
-			transaction.balance = data.balance
+			transaction.balance = new Big(data.balance)
 			transaction.validated = validated
 			transaction.from = fromUser
 			transaction.to = toUser
@@ -216,9 +217,13 @@ export default class TransactionResolver {
 				.getOneOrFail()
 
 			if (!transaction.validated) {
-				if (transaction.from.balance > transaction.balance) {
-					transaction.from.balance -= transaction.balance
-					transaction.to.balance += transaction.balance
+				if (transaction.from.balance.gt(transaction.balance)) {
+					transaction.from.balance = transaction.from.balance.minus(
+						transaction.balance
+					)
+					transaction.to.balance = transaction.to.balance.plus(
+						transaction.balance
+					)
 					await transaction.from.save()
 					await transaction.to.save()
 
