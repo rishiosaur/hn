@@ -22,7 +22,7 @@ export default class User extends BaseEntity {
 	})
 	id: string
 
-	@Column("numeric", { precision: 64, scale: 18, default: 0, })
+	@Column('numeric', { precision: 64, scale: 18, default: 0 })
 	@Field(() => Number, {
 		description: 'Current balance of the user in HN.',
 	})
