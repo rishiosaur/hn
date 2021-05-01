@@ -14,7 +14,6 @@ import Big from 'big.js'
 async function main() {
 	await createConnection()
 
-
 	const schema = await buildSchema({
 		resolvers: [
 			UserResolver,

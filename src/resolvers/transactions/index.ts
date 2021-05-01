@@ -86,7 +86,7 @@ export default class TransactionResolver {
 		return await getManager().transaction(async (manager) => {
 			const transaction = new Transaction()
 
-			transaction.balance = new Big( data.balance)
+			transaction.balance = new Big(data.balance)
 			transaction.validated = false
 
 			const userQuery = getRepository(User)
@@ -159,7 +159,7 @@ export default class TransactionResolver {
 
 			let validated = false
 
-			if (fromUser.balance.gt(data.balance) ) {
+			if (fromUser.balance.gt(data.balance)) {
 				fromUser.balance = fromUser.balance.minus(data.balance)
 				toUser.balance = toUser.balance.plus(data.balance)
 				validated = true
@@ -218,8 +218,12 @@ export default class TransactionResolver {
 
 			if (!transaction.validated) {
 				if (transaction.from.balance.gt(transaction.balance)) {
-					transaction.from.balance = transaction.from.balance.minus(transaction.balance)
-					transaction.to.balance = transaction.to.balance.plus(transaction.balance)
+					transaction.from.balance = transaction.from.balance.minus(
+						transaction.balance
+					)
+					transaction.to.balance = transaction.to.balance.plus(
+						transaction.balance
+					)
 					await transaction.from.save()
 					await transaction.to.save()
 

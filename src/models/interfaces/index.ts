@@ -31,8 +31,7 @@ export interface Transaction {
 
 export class ColumnNumericTransformer {
 	to(data: Big): string {
-		console.log(data
-		)
+		console.log(data)
 		return new Big(data).toFixed(18)
 	}
 	from(data: string): Big {

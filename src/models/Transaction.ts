@@ -8,7 +8,7 @@ import {
 } from 'typeorm'
 import { ObjectType, Field, ID } from 'type-graphql'
 import { ColumnNumericTransformer } from './interfaces'
-import Big from 'big.js';
+import Big from 'big.js'
 
 @Entity()
 @ObjectType()
