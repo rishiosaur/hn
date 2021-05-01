@@ -13,6 +13,7 @@ import Transaction from './Transaction'
 import { PaginationInput } from './Pagination'
 import { PaymentWebhook, TransactionWebhook } from './Webhook'
 import { ColumnNumericTransformer } from './interfaces'
+import Big from 'big.js'
 
 @Entity()
 @ObjectType()
@@ -32,7 +33,7 @@ export default class User extends BaseEntity {
 	@Field(() => Number, {
 		description: 'Current balance of the user in HN.',
 	})
-	balance: number
+	balance: Big
 
 	@Field(() => [Transaction], {
 		description: 'The total outgoing transactions that the user has sent.',
