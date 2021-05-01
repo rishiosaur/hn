@@ -23,7 +23,12 @@ export default class User extends BaseEntity {
 	})
 	id: string
 
-	@Column('numeric', { precision: 64, scale: 18, default: 0, transformer: new ColumnNumericTransformer() })
+	@Column('numeric', {
+		precision: 64,
+		scale: 18,
+		default: 0,
+		transformer: new ColumnNumericTransformer(),
+	})
 	@Field(() => Number, {
 		description: 'Current balance of the user in HN.',
 	})

@@ -18,7 +18,12 @@ export default class Transaction extends BaseEntity implements Transaction {
 	})
 	id: string
 
-	@Column('numeric', { precision: 64, scale: 18, default: 0, transformer: new ColumnNumericTransformer() })
+	@Column('numeric', {
+		precision: 64,
+		scale: 18,
+		default: 0,
+		transformer: new ColumnNumericTransformer(),
+	})
 	@Field(() => Number, {
 		description: 'An autoincrementing identifier for a transaction.',
 	})

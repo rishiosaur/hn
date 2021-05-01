@@ -29,9 +29,9 @@ export interface Transaction {
 
 export class ColumnNumericTransformer {
 	to(data: number): number {
-		return data;
+		return data
 	}
 	from(data: string): number {
-		return parseFloat(data);
+		return parseFloat(data)
 	}
 }
